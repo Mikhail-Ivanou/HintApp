@@ -26,7 +26,6 @@ public class CardStack extends RelativeLayout {
     public static final int DEFAULT_CARDS_COUNT = 3;
 
     private float mStackMargin = DEFAULT_STACK_MARGIN;
-    private int mIndex = 0;
     //we need to have one extra card to animate to last one when top is discarded
     private int mNumVisible = DEFAULT_CARDS_COUNT +1;
     private ArrayAdapter<Object> mAdapter;
@@ -61,20 +60,15 @@ public class CardStack extends RelativeLayout {
             @Override
             public void onAnimationEnd(Animator arg0) {
                 mCardAnimator.initLayout();
-                mIndex++;
                 loadLast();
 
                 viewCollection.get(0).setOnTouchListener(null);
                 viewCollection.get(viewCollection.size() - 1).setOnTouchListener(mOnTouchListener);
-                mEventListener.discarded(mIndex - 1, direction);
+                mEventListener.discarded(0, direction);
             }
         });
     }
 
-    public int getCurrIndex() {
-        //sync?
-        return mIndex;
-    }
 
     //only necessary when I need the attrs from xml, this will be used when inflating layout
     public CardStack(Context context, AttributeSet attrs) {
@@ -113,7 +107,6 @@ public class CardStack extends RelativeLayout {
     }
 
     public void reset(boolean resetIndex) {
-        if (resetIndex) mIndex = 0;
         removeAllViews();
         viewCollection.clear();
         for (int i = 0; i < mNumVisible; i++) {
@@ -187,8 +180,8 @@ public class CardStack extends RelativeLayout {
                         @Override
                         public void onAnimationEnd(Animator arg0) {
                             mCardAnimator.initLayout();
-                            mEventListener.discarded(mIndex, direction);
-                            Object item = mAdapter.getItem(mIndex);
+                            mEventListener.discarded(0, direction);
+                            Object item = mAdapter.getItem(0);
                             mAdapter.remove(item);
                             if (direction == CardUtils.DIRECTION_RIGHT) {
                                 mAdapter.add(item);
@@ -269,11 +262,14 @@ public class CardStack extends RelativeLayout {
     private void loadData() {
         for (int i = mNumVisible - 1; i >= 0; i--) {
             ViewGroup parent = (ViewGroup) viewCollection.get(i);
-            int index = (mIndex + mNumVisible - 1) - i;
+            int index = ( mNumVisible - 1) - i;
             if (index > mAdapter.getCount() - 1) {
                 parent.setVisibility(View.GONE);
             } else {
                 View child = mAdapter.getView(index, getContentView(), this);
+                if (i == 1) {
+                    //TODO initHints();
+                }
                 parent.addView(child);
                 parent.setVisibility(View.VISIBLE);
             }
@@ -293,7 +289,7 @@ public class CardStack extends RelativeLayout {
     private void loadLast() {
         ViewGroup parent = (ViewGroup) viewCollection.get(0);
 
-        int lastIndex = (mNumVisible - 1) + mIndex;
+        int lastIndex = mNumVisible - 1;
         if (lastIndex > mAdapter.getCount() - 1) {
             parent.setVisibility(View.GONE);
             return;
