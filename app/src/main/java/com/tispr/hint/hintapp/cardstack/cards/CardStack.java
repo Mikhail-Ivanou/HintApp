@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.database.DataSetObserver;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -14,6 +15,7 @@ import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
+import com.tispr.hint.hintapp.HintViewContainer;
 import com.tispr.hint.hintapp.R;
 import com.tispr.hint.hintapp.cardstack.CardStackLayout;
 
@@ -36,6 +38,9 @@ public class CardStack extends RelativeLayout {
     private CardEventListener mEventListener = new DefaultStackEventListener(200);
     private int mContentResource = 0;
     private CardStackLayout.ICardSwipeListener mCardSwipeListener;
+
+
+    private HintViewContainer mHintViewContainer;
 
     public void setCardSwipeListener(CardStackLayout.ICardSwipeListener pCardSwipeListener) {
         this.mCardSwipeListener = pCardSwipeListener;
@@ -218,7 +223,9 @@ public class CardStack extends RelativeLayout {
 
             @Override
             public boolean onTouch(View arg0, MotionEvent event) {
+                Log.e("test", "onTouch = " + event.getRawX());
                 dd.onTouchEvent(event);
+                mHintViewContainer.onTouchEvent(event);
                 return true;
             }
         };
@@ -266,10 +273,11 @@ public class CardStack extends RelativeLayout {
             if (index > mAdapter.getCount() - 1) {
                 parent.setVisibility(View.GONE);
             } else {
-                View child = mAdapter.getView(index, getContentView(), this);
-                if (i == 1) {
-                    //TODO initHints();
+                if (i + 1 == mNumVisible) {
+                    mHintViewContainer = (HintViewContainer) LayoutInflater.from(getContext()).inflate(R.layout.hint_layout, null);
+                    addView(mHintViewContainer);
                 }
+                View child = mAdapter.getView(index, getContentView(), this);
                 parent.addView(child);
                 parent.setVisibility(View.VISIBLE);
             }

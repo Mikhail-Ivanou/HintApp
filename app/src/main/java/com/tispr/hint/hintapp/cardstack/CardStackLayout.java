@@ -40,14 +40,6 @@ public class CardStackLayout extends RelativeLayout {
     public void init(Context context, int pContentResource) {
         mCardStack = (CardStack) findViewById(R.id.cardStack);
         mCardStack.setContentResource(pContentResource);
-        setOnTouchListener(new OnTouchListener() {
-
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                mCardStack.onTouchEvent(motionEvent);
-                return false;
-            }
-        });
     }
 
     public void setAdapter(CardsDataAdapter pCardAdapter) {

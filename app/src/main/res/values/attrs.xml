@@ -5,4 +5,18 @@
         <attr name="stackMargin" format="dimension" />
     </declare-styleable>
 
+    <declare-styleable name="HintView">
+        <attr name="minSize" format="dimension"/>
+        <attr name="maxSize" format="dimension"/>
+        <attr name="showViewOffset" format="float"/>
+        <attr name="maxViewOffset" format="float"/>
+        <attr name="changeImageOffset" format="dimension"/>
+        <attr name="direction" format="enum">
+            <enum name="LEFT" value="-1"/>
+            <enum name="RIGHT" value="1"/>
+        </attr>
+        <attr name="secondSrc" format="reference"/>
+        <attr name="secondSrcOffset" format="float"/>
+    </declare-styleable>
+
 </resources>
