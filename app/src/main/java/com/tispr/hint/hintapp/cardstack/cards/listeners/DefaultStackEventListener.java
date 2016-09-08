@@ -1,4 +1,6 @@
-package com.tispr.hint.hintapp.cardstack.cards;
+package com.tispr.hint.hintapp.cardstack.cards.listeners;
+
+import com.tispr.hint.hintapp.cardstack.cards.CardStack;
 
 public class DefaultStackEventListener implements CardStack.CardEventListener {
 

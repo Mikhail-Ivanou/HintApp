@@ -3,6 +3,8 @@ package com.tispr.hint.hintapp.cardstack.cards;
 import android.animation.TypeEvaluator;
 import android.widget.RelativeLayout.LayoutParams;
 
+import com.tispr.hint.hintapp.cardstack.cards.utils.CardUtils;
+
 public class RelativeLayoutParamsEvaluator implements TypeEvaluator<LayoutParams> {
 
     @Override

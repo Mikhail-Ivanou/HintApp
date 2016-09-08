@@ -17,7 +17,10 @@ import android.widget.RelativeLayout;
 
 import com.tispr.hint.hintapp.HintViewContainer;
 import com.tispr.hint.hintapp.R;
-import com.tispr.hint.hintapp.cardstack.CardStackLayout;
+import com.tispr.hint.hintapp.cardstack.cards.adapter.AbstractAdapterWithViewHolder;
+import com.tispr.hint.hintapp.cardstack.cards.listeners.DefaultStackEventListener;
+import com.tispr.hint.hintapp.cardstack.cards.listeners.ICardSwipeListener;
+import com.tispr.hint.hintapp.cardstack.cards.utils.CardUtils;
 
 import java.util.ArrayList;
 
@@ -30,19 +33,18 @@ public class CardStack extends RelativeLayout {
     private float mStackMargin = DEFAULT_STACK_MARGIN;
     //we need to have one extra card to animate to last one when top is discarded
     private int mNumVisible = DEFAULT_CARDS_COUNT +1;
-    private ArrayAdapter<Object> mAdapter;
+    private AbstractAdapterWithViewHolder mAdapter;
     private OnTouchListener mOnTouchListener;
     private CardAnimator mCardAnimator;
 
     //TODO discard offset to params
     private CardEventListener mEventListener = new DefaultStackEventListener(200);
-    private int mContentResource = 0;
-    private CardStackLayout.ICardSwipeListener mCardSwipeListener;
+    private ICardSwipeListener mCardSwipeListener;
 
 
     private HintViewContainer mHintViewContainer;
 
-    public void setCardSwipeListener(CardStackLayout.ICardSwipeListener pCardSwipeListener) {
+    public void setCardSwipeListener(ICardSwipeListener pCardSwipeListener) {
         this.mCardSwipeListener = pCardSwipeListener;
     }
 
@@ -105,10 +107,6 @@ public class CardStack extends RelativeLayout {
         mStackMargin = margin;
         mCardAnimator.setStackMargin((int) mStackMargin);
         mCardAnimator.initLayout();
-    }
-
-    public void setContentResource(int res) {
-        mContentResource = res;
     }
 
     public void reset(boolean resetIndex) {
@@ -248,7 +246,7 @@ public class CardStack extends RelativeLayout {
         super(context);
     }
 
-    public void setAdapter(final ArrayAdapter<Object> adapter) {
+    public void setAdapter(final AbstractAdapterWithViewHolder adapter) {
         if (mAdapter != null) {
             mAdapter.unregisterDataSetObserver(mOb);
         }
@@ -277,21 +275,11 @@ public class CardStack extends RelativeLayout {
                     mHintViewContainer = (HintViewContainer) LayoutInflater.from(getContext()).inflate(R.layout.hint_layout, null);
                     addView(mHintViewContainer);
                 }
-                View child = mAdapter.getView(index, getContentView(), this);
+                View child = mAdapter.getView(index, null, this);
                 parent.addView(child);
                 parent.setVisibility(View.VISIBLE);
             }
         }
-    }
-
-    private View getContentView() {
-        View contentView = null;
-        if (mContentResource != 0) {
-            LayoutInflater lf = LayoutInflater.from(getContext());
-            contentView = lf.inflate(mContentResource, null);
-        }
-        return contentView;
-
     }
 
     private void loadLast() {
@@ -303,7 +291,7 @@ public class CardStack extends RelativeLayout {
             return;
         }
 
-        View child = mAdapter.getView(lastIndex, getContentView(), parent);
+        View child = mAdapter.getView(lastIndex, null, parent);
         parent.removeAllViews();
         parent.addView(child);
     }

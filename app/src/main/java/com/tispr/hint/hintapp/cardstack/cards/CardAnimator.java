@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 
+import com.tispr.hint.hintapp.cardstack.cards.utils.CardUtils;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 

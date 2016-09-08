@@ -1,4 +1,4 @@
-package com.tispr.hint.hintapp.cardstack.cards;
+package com.tispr.hint.hintapp.cardstack.cards.utils;
 
 import android.util.Log;
 import android.view.View;
@@ -6,8 +6,8 @@ import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 
 public class CardUtils {
-    final static int DIRECTION_LEFT = 0;
-    final static int DIRECTION_RIGHT = 1;
+    public final static int DIRECTION_LEFT = 0;
+    public final static int DIRECTION_RIGHT = 1;
 
     public static void scale(View v, int pixel) {
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) v.getLayoutParams();

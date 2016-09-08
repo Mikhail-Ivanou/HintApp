@@ -1,30 +1,22 @@
 package com.tispr.hint.hintapp;
 
 import android.content.Context;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-public class CardsDataAdapter<T> extends ArrayAdapter<T> {
+import com.tispr.hint.hintapp.cardstack.cards.adapter.AbstractAdapterWithViewHolder;
 
-    private int mLayout;
-    private LayoutInflater mLayoutInflator;
+import java.util.List;
 
-    public CardsDataAdapter(Context context, int pLayoutId) {
-        super(context, pLayoutId);
-        mLayout = pLayoutId;
+public class CardsDataAdapter extends AbstractAdapterWithViewHolder<String> {
+
+    public CardsDataAdapter(Context context, int pLayoutId, List<String> pList) {
+        super(context, pLayoutId, pList);
     }
 
     @Override
-    public View getView(int position, View contentView, ViewGroup parent) {
-        //we need logic to reuse views
-
-        TextView v = (TextView) (contentView.findViewById(R.id.content));
-        v.setText((String) getItem(position));
-        return contentView;
+    public void init(ViewHolder view, String item) {
+        TextView v = (TextView) (view.findViewById(R.id.content));
+        v.setText(item);
     }
-
 }
 
