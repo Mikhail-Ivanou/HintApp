@@ -18,6 +18,7 @@ import android.widget.RelativeLayout;
 import com.tispr.hint.hintapp.HintViewContainer;
 import com.tispr.hint.hintapp.R;
 import com.tispr.hint.hintapp.cardstack.cards.adapter.AbstractAdapterWithViewHolder;
+import com.tispr.hint.hintapp.cardstack.cards.listeners.CardEventListener;
 import com.tispr.hint.hintapp.cardstack.cards.listeners.DefaultStackEventListener;
 import com.tispr.hint.hintapp.cardstack.cards.listeners.ICardSwipeListener;
 import com.tispr.hint.hintapp.cardstack.cards.utils.CardUtils;
@@ -48,20 +49,6 @@ public class CardStack extends RelativeLayout {
         this.mCardSwipeListener = pCardSwipeListener;
     }
 
-
-    public interface CardEventListener {
-
-        boolean swipeEnd(int section, float distance);
-
-        boolean swipeStart(int section, float distance);
-
-        boolean swipeContinue(int section, float distanceX, float distanceY);
-
-        void discarded(int mIndex, int direction);
-
-        void topCardTapped();
-    }
-
     public void discardTop(final int direction) {
         mCardAnimator.discard(direction, new AnimatorListenerAdapter() {
             @Override
@@ -87,11 +74,17 @@ public class CardStack extends RelativeLayout {
 
             //we need to have one extra card to animate to last one when top is discarded
             mNumVisible = array.getInteger(R.styleable.CardStack_visibleCards, DEFAULT_CARDS_COUNT) +1;
+            int hintLayoutId = array.getResourceId(R.styleable.CardStack_hintLayout, 0);
+            mHintViewContainer = (HintViewContainer) LayoutInflater.from(context).inflate(hintLayoutId, null);
+
             array.recycle();
         }
 
         //get attrs assign minVisiableNum
         for (int i = 0; i < mNumVisible; i++) {
+            if (i + 1 == mNumVisible) {
+                addView(mHintViewContainer);
+            }
             addContainerViews();
         }
         setupAnimation();
@@ -109,10 +102,13 @@ public class CardStack extends RelativeLayout {
         mCardAnimator.initLayout();
     }
 
-    public void reset(boolean resetIndex) {
+    public void reset() {
         removeAllViews();
         viewCollection.clear();
         for (int i = 0; i < mNumVisible; i++) {
+            if (i + 1 == mNumVisible) {
+                addView(mHintViewContainer);
+            }
             addContainerViews();
         }
         setupAnimation();
@@ -121,7 +117,7 @@ public class CardStack extends RelativeLayout {
 
     public void setVisibleCardNum(int visiableNum) {
         mNumVisible = visiableNum;
-        reset(false);
+        reset();
     }
 
     public void setThreshold(int t) {
@@ -142,6 +138,7 @@ public class CardStack extends RelativeLayout {
             @Override
             public boolean onDragStart(MotionEvent e1, MotionEvent e2,
                                        float distanceX, float distanceY) {
+                Log.e("test", "onDragStart");
                 mCardAnimator.drag(e1, e2, distanceX, distanceY);
                 float x1 = e1.getRawX();
                 float y1 = e1.getRawY();
@@ -156,6 +153,7 @@ public class CardStack extends RelativeLayout {
             @Override
             public boolean onDragContinue(MotionEvent e1, MotionEvent e2,
                                           float distanceX, float distanceY) {
+                Log.e("test", "onDragContinue");
                 float x1 = e1.getRawX();
                 float y1 = e1.getRawY();
                 float x2 = e2.getRawX();
@@ -169,6 +167,7 @@ public class CardStack extends RelativeLayout {
             @Override
             public boolean onDragEnd(MotionEvent e1, MotionEvent e2) {
                 //reverse(e1,e2);
+                Log.e("test", "onDragEnd");
                 float x1 = e1.getRawX();
                 float y1 = e1.getRawY();
                 float x2 = e2.getRawX();
@@ -210,6 +209,7 @@ public class CardStack extends RelativeLayout {
 
             @Override
             public boolean onTapUp() {
+                Log.e("test", "onTapUp");
                 mEventListener.topCardTapped();
                 return true;
             }
@@ -217,11 +217,10 @@ public class CardStack extends RelativeLayout {
         );
 
         mOnTouchListener = new OnTouchListener() {
-            private static final String DEBUG_TAG = "MotionEvents";
 
             @Override
             public boolean onTouch(View arg0, MotionEvent event) {
-                Log.e("test", "onTouch = " + event.getRawX());
+                Log.e("test", "touch = " + event.getAction() + " x=" + event.getX() + " rawX=" + event.getRawX());
                 dd.onTouchEvent(event);
                 mHintViewContainer.onTouchEvent(event);
                 return true;
@@ -233,7 +232,7 @@ public class CardStack extends RelativeLayout {
     private DataSetObserver mOb = new DataSetObserver() {
         @Override
         public void onChanged() {
-            reset(false);
+            reset();
         }
     };
 
@@ -256,7 +255,7 @@ public class CardStack extends RelativeLayout {
         loadData();
     }
 
-    public ArrayAdapter getAdapter() {
+    public AbstractAdapterWithViewHolder getAdapter() {
         return mAdapter;
     }
 
@@ -271,10 +270,6 @@ public class CardStack extends RelativeLayout {
             if (index > mAdapter.getCount() - 1) {
                 parent.setVisibility(View.GONE);
             } else {
-                if (i + 1 == mNumVisible) {
-                    mHintViewContainer = (HintViewContainer) LayoutInflater.from(getContext()).inflate(R.layout.hint_layout, null);
-                    addView(mHintViewContainer);
-                }
                 View child = mAdapter.getView(index, null, this);
                 parent.addView(child);
                 parent.setVisibility(View.VISIBLE);

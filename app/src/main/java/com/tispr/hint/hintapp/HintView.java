@@ -151,7 +151,6 @@ public class HintView extends AppCompatImageView {
 
     @Override
     public void setVisibility(int visibility) {
-        //TODO return that
-//        super.setVisibility(visibility);
+        super.setVisibility(visibility);
     }
 }

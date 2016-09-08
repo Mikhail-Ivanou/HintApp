@@ -3,6 +3,7 @@
     <declare-styleable name="CardStack">
         <attr name="visibleCards" format="integer"/>
         <attr name="stackMargin" format="dimension" />
+        <attr name="hintLayout" format="reference" />
     </declare-styleable>
 
     <declare-styleable name="HintView">
