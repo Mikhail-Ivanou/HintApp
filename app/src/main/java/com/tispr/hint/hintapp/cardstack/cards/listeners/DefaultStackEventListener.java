@@ -1,13 +1,11 @@
 package com.tispr.hint.hintapp.cardstack.cards.listeners;
 
-import com.tispr.hint.hintapp.cardstack.cards.CardStack;
-
 public class DefaultStackEventListener implements CardEventListener {
 
     private float mThreshold;
 
-    public DefaultStackEventListener(int i) {
-        mThreshold = i;
+    public DefaultStackEventListener(float discardOffset) {
+        mThreshold = discardOffset;
     }
 
     @Override

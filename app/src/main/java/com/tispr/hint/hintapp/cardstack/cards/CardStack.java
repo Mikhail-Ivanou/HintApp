@@ -38,12 +38,13 @@ public class CardStack extends RelativeLayout {
     private OnTouchListener mOnTouchListener;
     private CardAnimator mCardAnimator;
 
-    //TODO discard offset to params
-    private CardEventListener mEventListener = new DefaultStackEventListener(200);
+    private CardEventListener mEventListener;
     private ICardSwipeListener mCardSwipeListener;
 
 
     private HintViewContainer mHintViewContainer;
+
+    private float mDiscardOffset = 0;
 
     public void setCardSwipeListener(ICardSwipeListener pCardSwipeListener) {
         this.mCardSwipeListener = pCardSwipeListener;
@@ -64,7 +65,6 @@ public class CardStack extends RelativeLayout {
     }
 
 
-    //only necessary when I need the attrs from xml, this will be used when inflating layout
     public CardStack(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -74,11 +74,15 @@ public class CardStack extends RelativeLayout {
 
             //we need to have one extra card to animate to last one when top is discarded
             mNumVisible = array.getInteger(R.styleable.CardStack_visibleCards, DEFAULT_CARDS_COUNT) +1;
+
             int hintLayoutId = array.getResourceId(R.styleable.CardStack_hintLayout, 0);
             mHintViewContainer = (HintViewContainer) LayoutInflater.from(context).inflate(hintLayoutId, null);
+            mDiscardOffset = array.getDimension(R.styleable.CardStack_discardOffset, mDiscardOffset);
 
             array.recycle();
         }
+
+        setThreshold(mDiscardOffset);
 
         //get attrs assign minVisiableNum
         for (int i = 0; i < mNumVisible; i++) {
@@ -120,8 +124,8 @@ public class CardStack extends RelativeLayout {
         reset();
     }
 
-    public void setThreshold(int t) {
-        mEventListener = new DefaultStackEventListener(t);
+    public void setThreshold(float discardOffset) {
+        mEventListener = new DefaultStackEventListener(discardOffset);
     }
 
     public void setListener(CardEventListener cel) {

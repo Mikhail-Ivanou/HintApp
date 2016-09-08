@@ -5,6 +5,7 @@ import android.animation.Animator.AnimatorListener;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -122,6 +123,7 @@ public class CardAnimator {
         discardAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator value) {
+                Log.e("test", "animationValue = " + value.getAnimatedFraction());
                 topView.setLayoutParams((LayoutParams) value.getAnimatedValue());
             }
         });

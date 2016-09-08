@@ -4,6 +4,7 @@
         <attr name="visibleCards" format="integer"/>
         <attr name="stackMargin" format="dimension" />
         <attr name="hintLayout" format="reference" />
+        <attr name="discardOffset" format="dimension"/>
     </declare-styleable>
 
     <declare-styleable name="HintView">

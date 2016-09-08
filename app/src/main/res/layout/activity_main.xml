@@ -20,7 +20,8 @@
         android:padding="40dp"
         app:hintLayout="@layout/hint_layout"
         app:stackMargin="6dp"
-        app:visibleCards="3" />
+        app:visibleCards="3"
+        app:discardOffset="100dp"/>
 
 
 </RelativeLayout>
