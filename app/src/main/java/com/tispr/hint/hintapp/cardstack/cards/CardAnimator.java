@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 
+import com.tispr.hint.hintapp.HintViewContainer;
 import com.tispr.hint.hintapp.cardstack.cards.utils.CardUtils;
 
 import java.util.ArrayList;
@@ -110,7 +111,7 @@ public class CardAnimator {
         mCardCollection.set(0, temp);
     }
 
-    public void discard(int direction, final AnimatorListener al) {
+    public void discard(int direction, final float xPosition, final HintViewContainer hintViewContainer, final AnimatorListener al) {
         AnimatorSet as = new AnimatorSet();
         ArrayList<Animator> aCollection = new ArrayList<Animator>();
 
@@ -123,8 +124,12 @@ public class CardAnimator {
         discardAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator value) {
+                float animatedFraction = value.getAnimatedFraction();
+                float calculatedPosition = xPosition + animatedFraction * REMOTE_DISTANCE;
                 Log.e("test", "animationValue = " + value.getAnimatedFraction());
                 topView.setLayoutParams((LayoutParams) value.getAnimatedValue());
+                hintViewContainer.onDragContinue(calculatedPosition);
+
             }
         });
 
@@ -157,7 +162,7 @@ public class CardAnimator {
                 if (al != null) {
                     al.onAnimationEnd(animation);
                 }
-                mLayoutsMap = new HashMap<View, LayoutParams>();
+                mLayoutsMap = new HashMap<>();
                 for (View v : mCardCollection) {
                     RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) v.getLayoutParams();
                     RelativeLayout.LayoutParams paramsCopy = CardUtils.cloneParams(params);

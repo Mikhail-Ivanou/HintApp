@@ -5,9 +5,12 @@ import android.content.Context;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.RelativeLayout;
 
-public class HintViewContainer extends RelativeLayout {
+import com.tispr.hint.hintapp.cardstack.cards.listeners.IDragListener;
+
+public class HintViewContainer extends RelativeLayout implements IDragListener {
     public HintViewContainer(Context context) {
         super(context);
     }
@@ -32,5 +35,36 @@ public class HintViewContainer extends RelativeLayout {
             getChildAt(i).onTouchEvent(event);
         }
         return false;
+    }
+
+
+    @Override
+    public void onDragStart(float x) {
+        for (int i = 0; i < getChildCount(); i++) {
+            View view = getChildAt(i);
+            if (view instanceof IDragListener) {
+                ((IDragListener) view).onDragStart(x);
+            }
+        }
+    }
+
+    @Override
+    public void onDragContinue(float x) {
+        for (int i = 0; i < getChildCount(); i++) {
+            View view = getChildAt(i);
+            if (view instanceof IDragListener) {
+                ((IDragListener) view).onDragContinue(x);
+            }
+        }
+    }
+
+    @Override
+    public void onDragEnd() {
+        for (int i = 0; i < getChildCount(); i++) {
+            View view = getChildAt(i);
+            if (view instanceof IDragListener) {
+                ((IDragListener) view).onDragEnd();
+            }
+        }
     }
 }

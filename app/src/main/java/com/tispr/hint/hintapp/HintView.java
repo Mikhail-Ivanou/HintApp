@@ -8,11 +8,12 @@ import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class HintView extends AppCompatImageView {
+import com.tispr.hint.hintapp.cardstack.cards.listeners.IDragListener;
+
+public class HintView extends AppCompatImageView implements IDragListener {
 
     private final int mScreenWidth = getResources().getDisplayMetrics().widthPixels;
 
@@ -79,30 +80,12 @@ public class HintView extends AppCompatImageView {
 
     private float mStartPosition;
 
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        int action = event.getAction();
-        switch (action) {
-            case MotionEvent.ACTION_DOWN:
-                Log.e("test", "actionDown");
-                proceedActionDown(event.getRawX());
-                break;
-            case MotionEvent.ACTION_MOVE:
-                proceedActionMove(event.getRawX());
-                break;
-            case MotionEvent.ACTION_UP:
-                Log.e("test", "actionUp");
-                proceedActionUp(event.getRawX());
-                break;
-        }
-        return true;
-    }
 
-    private void proceedActionDown(float pXPosition) {
+    private void proceedDragStart(float pXPosition) {
         mStartPosition = pXPosition;
     }
 
-    private void proceedActionMove(float pXPosition) {
+    private void proceedDragContinue(float pXPosition) {
         float position = swipeInPercent(pXPosition);
         Log.e("test", "position = " +position);
         if (position > mShowViewOffset) {
@@ -126,7 +109,7 @@ public class HintView extends AppCompatImageView {
         }
     }
 
-    private void proceedActionUp(float pXPosition) {
+    private void proceedDragEnd() {
         mStartPosition = 0;
         setVisibility(View.INVISIBLE);
     }
@@ -152,5 +135,20 @@ public class HintView extends AppCompatImageView {
     @Override
     public void setVisibility(int visibility) {
         super.setVisibility(visibility);
+    }
+
+    @Override
+    public void onDragStart(float x) {
+        proceedDragStart(x);
+    }
+
+    @Override
+    public void onDragContinue(float x) {
+        proceedDragContinue(x);
+    }
+
+    @Override
+    public void onDragEnd() {
+        proceedDragEnd();
     }
 }

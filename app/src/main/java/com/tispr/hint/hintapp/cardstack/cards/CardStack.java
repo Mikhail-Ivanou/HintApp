@@ -11,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
@@ -51,7 +50,7 @@ public class CardStack extends RelativeLayout {
     }
 
     public void discardTop(final int direction) {
-        mCardAnimator.discard(direction, new AnimatorListenerAdapter() {
+        mCardAnimator.discard(direction, 0, mHintViewContainer, new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator arg0) {
                 mCardAnimator.initLayout();
@@ -142,15 +141,16 @@ public class CardStack extends RelativeLayout {
             @Override
             public boolean onDragStart(MotionEvent e1, MotionEvent e2,
                                        float distanceX, float distanceY) {
-                Log.e("test", "onDragStart");
                 mCardAnimator.drag(e1, e2, distanceX, distanceY);
                 float x1 = e1.getRawX();
                 float y1 = e1.getRawY();
                 float x2 = e2.getRawX();
                 float y2 = e2.getRawY();
+                Log.e("test", "onDragStart x2=" + x2);
                 final int direction = CardUtils.direction(x1, x2);
                 float distance = CardUtils.distance(x1, y1, x2, y2);
                 mEventListener.swipeStart(direction, distance);
+                mHintViewContainer.onDragStart(x2);
                 return true;
             }
 
@@ -162,9 +162,11 @@ public class CardStack extends RelativeLayout {
                 float y1 = e1.getRawY();
                 float x2 = e2.getRawX();
                 float y2 = e2.getRawY();
+                Log.e("test", "onDragContinue x2=" + x2);
                 final int direction = CardUtils.direction(x1, x2);
                 mCardAnimator.drag(e1, e2, distanceX, distanceY);
                 mEventListener.swipeContinue(direction, Math.abs(x2 - x1), Math.abs(y2 - y1));
+                mHintViewContainer.onDragContinue(x2);
                 return true;
             }
 
@@ -176,15 +178,18 @@ public class CardStack extends RelativeLayout {
                 float y1 = e1.getRawY();
                 float x2 = e2.getRawX();
                 float y2 = e2.getRawY();
+                Log.e("test", "onDragEnd x2=" + x2);
                 float distance = CardUtils.distance(x1, y1, x2, y2);
                 final int direction = CardUtils.direction(x1, x2);
 
                 boolean discard = mEventListener.swipeEnd(direction, distance);
                 if (discard) {
-                    mCardAnimator.discard(direction, new AnimatorListenerAdapter() {
+                    Log.e("test", "startDiscard x1= " + x1 + " x2=" + x2);
+                    mCardAnimator.discard(direction, x2, mHintViewContainer, new AnimatorListenerAdapter() {
 
                         @Override
                         public void onAnimationEnd(Animator arg0) {
+                            mHintViewContainer.onDragEnd();
                             mCardAnimator.initLayout();
                             mEventListener.discarded(0, direction);
                             Object item = mAdapter.getItem(0);
@@ -224,9 +229,7 @@ public class CardStack extends RelativeLayout {
 
             @Override
             public boolean onTouch(View arg0, MotionEvent event) {
-                Log.e("test", "touch = " + event.getAction() + " x=" + event.getX() + " rawX=" + event.getRawX());
                 dd.onTouchEvent(event);
-                mHintViewContainer.onTouchEvent(event);
                 return true;
             }
         };
