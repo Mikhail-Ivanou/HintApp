@@ -63,7 +63,7 @@ public class HintView extends AppCompatImageView implements IDragListener {
         final TypedArray a = getContext().obtainStyledAttributes(attrs, R.styleable.HintView);
         mMinSize = a.getDimension(R.styleable.HintView_minSize, mMinSize);
         mMaxSize = a.getDimension(R.styleable.HintView_maxSize, mMaxSize);
-        mDirection = a.getInt(R.styleable.HintView_direction, mDirection);
+        mDirection = a.getInt(R.styleable.HintView_swipeDirection, mDirection);
         mShowViewOffset = a.getFloat(R.styleable.HintView_showViewOffset, mShowViewOffset);
         mMaxViewOffset = a.getFloat(R.styleable.HintView_maxViewOffset, mMaxViewOffset);
         mChangeImageOffset = a.getFloat(R.styleable.HintView_changeImageOffset, mChangeImageOffset);

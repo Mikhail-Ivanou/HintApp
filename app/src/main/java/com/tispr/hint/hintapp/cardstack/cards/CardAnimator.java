@@ -111,7 +111,7 @@ public class CardAnimator {
         mCardCollection.set(0, temp);
     }
 
-    public void discard(int direction, final float xPosition, final HintViewContainer hintViewContainer, final AnimatorListener al) {
+    public void discard(final int direction, final float xPosition, final HintViewContainer hintViewContainer, final AnimatorListener al) {
         AnimatorSet as = new AnimatorSet();
         ArrayList<Animator> aCollection = new ArrayList<Animator>();
 
@@ -124,8 +124,9 @@ public class CardAnimator {
         discardAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator value) {
+                int directionValue = CardUtils.DIRECTION_LEFT == direction ? -1 : 1;
                 float animatedFraction = value.getAnimatedFraction();
-                float calculatedPosition = xPosition + animatedFraction * REMOTE_DISTANCE;
+                float calculatedPosition = xPosition + animatedFraction * REMOTE_DISTANCE * directionValue;
                 Log.e("test", "animationValue = " + value.getAnimatedFraction());
                 topView.setLayoutParams((LayoutParams) value.getAnimatedValue());
                 hintViewContainer.onDragContinue(calculatedPosition);

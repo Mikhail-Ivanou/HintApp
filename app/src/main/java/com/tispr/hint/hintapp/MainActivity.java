@@ -24,12 +24,12 @@ public class MainActivity extends AppCompatActivity {
         items.add("test1");
         items.add("test2");
         items.add("test3");
-        items.add("test4");
-        items.add("test5");
-        items.add("test6");
-        items.add("test7");
-        items.add("test8");
-        items.add("test9");
+//        items.add("test4");
+//        items.add("test5");
+//        items.add("test6");
+//        items.add("test7");
+//        items.add("test8");
+//        items.add("test9");
 
         CardsDataAdapter adapter = new CardsDataAdapter(getApplicationContext(), R.layout.card_content, items);
 

@@ -13,7 +13,7 @@
         <attr name="showViewOffset" format="float"/>
         <attr name="maxViewOffset" format="float"/>
         <attr name="changeImageOffset" format="dimension"/>
-        <attr name="direction" format="enum">
+        <attr name="swipeDirection" format="enum">
             <enum name="LEFT" value="-1"/>
             <enum name="RIGHT" value="1"/>
         </attr>
