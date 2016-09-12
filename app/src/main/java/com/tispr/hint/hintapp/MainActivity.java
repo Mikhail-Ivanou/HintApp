@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
         items.add("test1");
         items.add("test2");
         items.add("test3");
-//        items.add("test4");
+        items.add("test4");
 //        items.add("test5");
 //        items.add("test6");
 //        items.add("test7");
