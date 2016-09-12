@@ -50,7 +50,7 @@ public class CardStack extends RelativeLayout {
     }
 
     public void discardTop(final int direction) {
-        mCardAnimator.discard(direction, 0, mHintViewContainer, new AnimatorListenerAdapter() {
+        mCardAnimator.discard(direction, 0, mHintViewContainer, needIgnoreDragEventForHint(direction), new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator arg0) {
                 mCardAnimator.initLayout();
@@ -150,7 +150,9 @@ public class CardStack extends RelativeLayout {
                 final int direction = CardUtils.direction(x1, x2);
                 float distance = CardUtils.distance(x1, y1, x2, y2);
                 mEventListener.swipeStart(direction, distance);
-                mHintViewContainer.onDragStart(x2);
+                if (!needIgnoreDragEventForHint(direction)) {
+                    mHintViewContainer.onDragStart(x2);
+                }
                 return true;
             }
 
@@ -166,7 +168,9 @@ public class CardStack extends RelativeLayout {
                 final int direction = CardUtils.direction(x1, x2);
                 mCardAnimator.drag(e1, e2, distanceX, distanceY);
                 mEventListener.swipeContinue(direction, Math.abs(x2 - x1), Math.abs(y2 - y1));
-                mHintViewContainer.onDragContinue(x2);
+                if (!needIgnoreDragEventForHint(direction)) {
+                    mHintViewContainer.onDragContinue(x2);
+                }
                 return true;
             }
 
@@ -178,18 +182,21 @@ public class CardStack extends RelativeLayout {
                 float y1 = e1.getRawY();
                 float x2 = e2.getRawX();
                 float y2 = e2.getRawY();
-                Log.e("test", "onDragEnd x2=" + x2);
                 float distance = CardUtils.distance(x1, y1, x2, y2);
                 final int direction = CardUtils.direction(x1, x2);
+                boolean ignoreDragEventForHint = needIgnoreDragEventForHint(direction);
+                Log.e("test", "onDragEnd x2=" + x2 + " direction = " +direction);
 
                 boolean discard = mEventListener.swipeEnd(direction, distance);
                 if (discard) {
                     Log.e("test", "startDiscard x1= " + x1 + " x2=" + x2);
-                    mCardAnimator.discard(direction, x2, mHintViewContainer, new AnimatorListenerAdapter() {
+                    mCardAnimator.discard(direction, x2, mHintViewContainer, ignoreDragEventForHint, new AnimatorListenerAdapter() {
 
                         @Override
                         public void onAnimationEnd(Animator arg0) {
-                            mHintViewContainer.onDragEnd();
+                            if (!needIgnoreDragEventForHint(direction)) {
+                                mHintViewContainer.onDragEnd();
+                            }
                             mCardAnimator.initLayout();
                             mEventListener.discarded(0, direction);
                             Object item = mAdapter.getItem(0);
@@ -211,7 +218,7 @@ public class CardStack extends RelativeLayout {
 
                     });
                 } else {
-                    mCardAnimator.reverse(direction, x2, mHintViewContainer);
+                    mCardAnimator.reverse(direction, x2, mHintViewContainer, ignoreDragEventForHint);
                 }
                 return true;
             }
@@ -234,6 +241,10 @@ public class CardStack extends RelativeLayout {
             }
         };
         cardView.setOnTouchListener(mOnTouchListener);
+    }
+
+    private boolean needIgnoreDragEventForHint(int direction) {
+        return CardUtils.DIRECTION_RIGHT == direction && mAdapter.getCount() == 1;
     }
 
     private DataSetObserver mOb = new DataSetObserver() {

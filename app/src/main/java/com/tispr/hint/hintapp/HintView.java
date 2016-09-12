@@ -133,11 +133,6 @@ public class HintView extends AppCompatImageView implements IDragListener {
     }
 
     @Override
-    public void setVisibility(int visibility) {
-        super.setVisibility(visibility);
-    }
-
-    @Override
     public void onDragStart(float x) {
         proceedDragStart(x);
     }

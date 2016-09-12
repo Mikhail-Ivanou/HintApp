@@ -67,4 +67,12 @@ public class HintViewContainer extends RelativeLayout implements IDragListener {
             }
         }
     }
+
+    public void hideAllViews() {
+        for (int i = 0; i < getChildCount(); i++) {
+            View view = getChildAt(i);
+            view.setVisibility(View.INVISIBLE);
+        }
+
+    }
 }

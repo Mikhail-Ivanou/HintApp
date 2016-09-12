@@ -5,10 +5,10 @@ import android.animation.Animator.AnimatorListener;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 
@@ -111,7 +111,7 @@ public class CardAnimator {
         mCardCollection.set(0, temp);
     }
 
-    public void discard(final int direction, final float xPosition, final HintViewContainer hintViewContainer, final AnimatorListener al) {
+    public void discard(final int direction, final float xPosition, final HintViewContainer hintViewContainer,final boolean ignoreDragEventForHint, final AnimatorListener al) {
         AnimatorSet as = new AnimatorSet();
         ArrayList<Animator> aCollection = new ArrayList<Animator>();
 
@@ -124,10 +124,12 @@ public class CardAnimator {
         discardAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator value) {
-                int directionValue = CardUtils.DIRECTION_LEFT == direction ? -1 : 1;
-                float animatedFraction = value.getAnimatedFraction();
-                float calculatedPosition = xPosition + animatedFraction * REMOTE_DISTANCE * directionValue;
-                hintViewContainer.onDragContinue(calculatedPosition);
+                if (!ignoreDragEventForHint) {
+                    int directionValue = CardUtils.DIRECTION_LEFT == direction ? -1 : 1;
+                    float animatedFraction = value.getAnimatedFraction();
+                    float calculatedPosition = xPosition + animatedFraction * REMOTE_DISTANCE * directionValue;
+                    hintViewContainer.onDragContinue(calculatedPosition);
+                }
                 topView.setLayoutParams((LayoutParams) value.getAnimatedValue());
 
 
@@ -177,7 +179,7 @@ public class CardAnimator {
         as.start();
     }
 
-    public void reverse(final int direction, final float xPosition, final HintViewContainer hintViewContainer) {
+    public void reverse(final int direction, final float xPosition, final HintViewContainer hintViewContainer, final boolean ignoreDragEventForHint) {
         final View topView = getTopView();
 
         RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) topView.getLayoutParams();
@@ -187,12 +189,35 @@ public class CardAnimator {
         layoutAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator value) {
-                //reverse direction
-                int directionValue = CardUtils.DIRECTION_LEFT == direction ? 1 : -1;
-                float animatedFraction = value.getAnimatedFraction();
-                float calculatedPosition = xPosition + animatedFraction * REMOTE_DISTANCE * directionValue;
-                hintViewContainer.onDragContinue(calculatedPosition);
+                if (!ignoreDragEventForHint) {
+                    //reverse direction
+                    int directionValue = CardUtils.DIRECTION_LEFT == direction ? 1 : -1;
+                    float animatedFraction = value.getAnimatedFraction();
+                    float calculatedPosition = xPosition + animatedFraction * REMOTE_DISTANCE * directionValue;
+                    hintViewContainer.onDragContinue(calculatedPosition);
+                }
                 topView.setLayoutParams((LayoutParams) value.getAnimatedValue());
+            }
+        });
+        layoutAnim.addListener(new AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animator) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animator) {
+                hintViewContainer.hideAllViews();
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animator) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animator) {
+
             }
         });
         layoutAnim.start();
