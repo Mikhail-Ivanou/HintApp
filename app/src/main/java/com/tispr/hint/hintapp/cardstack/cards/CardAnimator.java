@@ -127,9 +127,9 @@ public class CardAnimator {
                 int directionValue = CardUtils.DIRECTION_LEFT == direction ? -1 : 1;
                 float animatedFraction = value.getAnimatedFraction();
                 float calculatedPosition = xPosition + animatedFraction * REMOTE_DISTANCE * directionValue;
-                Log.e("test", "animationValue = " + value.getAnimatedFraction());
-                topView.setLayoutParams((LayoutParams) value.getAnimatedValue());
                 hintViewContainer.onDragContinue(calculatedPosition);
+                topView.setLayoutParams((LayoutParams) value.getAnimatedValue());
+
 
             }
         });
@@ -177,7 +177,7 @@ public class CardAnimator {
         as.start();
     }
 
-    public void reverse(MotionEvent e1, MotionEvent e2) {
+    public void reverse(final int direction, final float xPosition, final HintViewContainer hintViewContainer) {
         final View topView = getTopView();
 
         RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) topView.getLayoutParams();
@@ -187,6 +187,11 @@ public class CardAnimator {
         layoutAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator value) {
+                //reverse direction
+                int directionValue = CardUtils.DIRECTION_LEFT == direction ? 1 : -1;
+                float animatedFraction = value.getAnimatedFraction();
+                float calculatedPosition = xPosition + animatedFraction * REMOTE_DISTANCE * directionValue;
+                hintViewContainer.onDragContinue(calculatedPosition);
                 topView.setLayoutParams((LayoutParams) value.getAnimatedValue());
             }
         });

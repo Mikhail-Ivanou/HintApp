@@ -211,7 +211,7 @@ public class CardStack extends RelativeLayout {
 
                     });
                 } else {
-                    mCardAnimator.reverse(e1, e2);
+                    mCardAnimator.reverse(direction, x2, mHintViewContainer);
                 }
                 return true;
             }

@@ -19,7 +19,7 @@
         app:minSize="32dp"
         app:secondSrc="@drawable/ic_next_fill"
         app:secondSrcOffset="0.45"
-        app:showViewOffset="0.15" />
+        app:showViewOffset="0.05" />
 
     <com.tispr.hint.hintapp.HintView
         android:id="@+id/hint_view2"
@@ -35,6 +35,6 @@
         app:secondSrcOffset="0.45"
         android:layout_marginRight="10dp"
         android:layout_marginTop="10dp"
-        app:showViewOffset="0.15" />
+        app:showViewOffset="0.05" />
 
 </com.tispr.hint.hintapp.HintViewContainer>
