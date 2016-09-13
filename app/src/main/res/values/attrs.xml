@@ -5,6 +5,9 @@
         <attr name="stackMargin" format="dimension" />
         <attr name="hintLayout" format="reference" />
         <attr name="discardOffset" format="dimension"/>
+        <attr name="swipeOutAnimationDuration" format="integer"/>
+        <attr name="returnBackAnimationDuration" format="integer"/>
+        <attr name="restackAnimationDuration" format="integer"/>
     </declare-styleable>
 
     <declare-styleable name="HintView">

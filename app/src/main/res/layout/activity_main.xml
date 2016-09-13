@@ -10,18 +10,24 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.tispr.hint.hintapp.MainActivity">
 
-
-    <com.tispr.hint.hintapp.cardstack.cards.CardStack
-        android:id="@+id/cardStack"
+    <android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/swipe_container"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:clipChildren="false"
-        android:clipToPadding="false"
-        android:padding="40dp"
-        app:hintLayout="@layout/hint_layout"
-        app:stackMargin="6dp"
-        app:visibleCards="3"
-        app:discardOffset="100dp"/>
+        android:layout_height="match_parent">
 
 
+        <com.tispr.hint.hintapp.cardstack.cards.CardStack
+            android:id="@+id/cardStack"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:padding="40dp"
+            app:discardOffset="100dp"
+            app:hintLayout="@layout/hint_layout"
+            app:stackMargin="6dp"
+            app:visibleCards="3"
+            app:restackAnimationDuration = "300"/>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
 </RelativeLayout>

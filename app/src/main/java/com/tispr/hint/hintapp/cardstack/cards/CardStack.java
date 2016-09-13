@@ -66,13 +66,19 @@ public class CardStack extends RelativeLayout {
 
     public CardStack(Context context, AttributeSet attrs) {
         super(context, attrs);
-
+        int restackDuration = CardAnimator.RESTACK_DURATION;
+        int swipeOutDuration = CardAnimator.SWIPE_OUT_DURATION;
+        int returnBackDuration = CardAnimator.RETURN_BACK_DURATION;
         if (attrs != null) {
             TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.CardStack);
             mStackMargin = array.getDimension(R.styleable.CardStack_stackMargin, mStackMargin);
 
             //we need to have one extra card to animate to last one when top is discarded
             mNumVisible = array.getInteger(R.styleable.CardStack_visibleCards, DEFAULT_CARDS_COUNT) +1;
+
+            restackDuration = array.getInteger(R.styleable.CardStack_restackAnimationDuration, restackDuration);
+            swipeOutDuration = array.getInteger(R.styleable.CardStack_swipeOutAnimationDuration, swipeOutDuration);
+            returnBackDuration = array.getInteger(R.styleable.CardStack_returnBackAnimationDuration, returnBackDuration);
 
             int hintLayoutId = array.getResourceId(R.styleable.CardStack_hintLayout, 0);
             mHintViewContainer = (HintViewContainer) LayoutInflater.from(context).inflate(hintLayoutId, null);
@@ -91,6 +97,9 @@ public class CardStack extends RelativeLayout {
             addContainerViews();
         }
         setupAnimation();
+        mCardAnimator.setRestackDuration(restackDuration);
+        mCardAnimator.setReturnBackDuration(returnBackDuration);
+        mCardAnimator.setSwipeOutDuration(swipeOutDuration);
     }
 
     private void addContainerViews() {
@@ -153,6 +162,7 @@ public class CardStack extends RelativeLayout {
                 if (!needIgnoreDragEventForHint(direction)) {
                     mHintViewContainer.onDragStart(x2);
                 }
+                mCardSwipeListener.onSwipeStarted();
                 return true;
             }
 
@@ -186,7 +196,7 @@ public class CardStack extends RelativeLayout {
                 final int direction = CardUtils.direction(x1, x2);
                 boolean ignoreDragEventForHint = needIgnoreDragEventForHint(direction);
                 Log.e("test", "onDragEnd x2=" + x2 + " direction = " +direction);
-
+                mCardSwipeListener.onSwipeFinished();
                 boolean discard = mEventListener.swipeEnd(direction, distance);
                 if (discard) {
                     Log.e("test", "startDiscard x1= " + x1 + " x2=" + x2);
@@ -311,5 +321,9 @@ public class CardStack extends RelativeLayout {
 
     public int getStackSize() {
         return mNumVisible;
+    }
+
+    public void restackOnRefresh() {
+        mCardAnimator.restack();
     }
 }

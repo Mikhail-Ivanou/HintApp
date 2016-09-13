@@ -6,4 +6,8 @@ public interface ICardSwipeListener<T> {
 
     void onCardReordered(T dataObject);
 
+
+    void onSwipeStarted();
+
+    void onSwipeFinished();
 }

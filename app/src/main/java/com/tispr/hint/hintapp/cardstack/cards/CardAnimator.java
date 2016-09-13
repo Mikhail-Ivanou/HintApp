@@ -8,7 +8,6 @@ import android.animation.ValueAnimator;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 
@@ -22,14 +21,24 @@ public class CardAnimator {
 
     //TODO we need to calculate screen width to animate more definitely
     private static final int REMOTE_DISTANCE = 1000;
-    public static final int DURATION = 400;
+
+    public static final int SWIPE_OUT_DURATION = 400;
+    public static final int RETURN_BACK_DURATION = 400;
+    public static final int RESTACK_DURATION = 400;
 
     public ArrayList<View> mCardCollection;
 
     private HashMap<View, LayoutParams> mLayoutsMap;
     private RelativeLayout.LayoutParams[] mRemoteLayouts = new RelativeLayout.LayoutParams[2];
+    private RelativeLayout.LayoutParams[] mRestackLayouts = new RelativeLayout.LayoutParams[4];
     private RelativeLayout.LayoutParams baseLayout;
+
     private int mStackMargin = (int) CardStack.DEFAULT_STACK_MARGIN;
+    private int mSwipeOutDuration = (int) SWIPE_OUT_DURATION;
+    private int mReturnBackDuration = (int) RETURN_BACK_DURATION;
+    private int mRestackDuration = (int) RESTACK_DURATION;
+
+
 
     public CardAnimator(ArrayList<View> viewCollection, int stackMargin) {
         mCardCollection = viewCollection;
@@ -56,10 +65,12 @@ public class CardAnimator {
 
         initLayout();
 
-        for (View v : mCardCollection) {
+        for (int i = 0; i < mCardCollection.size(); i++) {
+            View v = mCardCollection.get(i);
             RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) v.getLayoutParams();
             RelativeLayout.LayoutParams paramsCopy = CardUtils.cloneParams(params);
             mLayoutsMap.put(v, paramsCopy);
+            mRestackLayouts[i] = CardUtils.getMoveParams(v, REMOTE_DISTANCE, 0);
         }
 
         setupRemotes();
@@ -111,7 +122,7 @@ public class CardAnimator {
         mCardCollection.set(0, temp);
     }
 
-    public void discard(final int direction, final float xPosition, final HintViewContainer hintViewContainer,final boolean ignoreDragEventForHint, final AnimatorListener al) {
+    public void discard(final int direction, final float xPosition, final HintViewContainer hintViewContainer, final boolean ignoreDragEventForHint, final AnimatorListener al) {
         AnimatorSet as = new AnimatorSet();
         ArrayList<Animator> aCollection = new ArrayList<Animator>();
 
@@ -136,7 +147,7 @@ public class CardAnimator {
             }
         });
 
-        discardAnim.setDuration(DURATION);
+        discardAnim.setDuration(mSwipeOutDuration);
         aCollection.add(discardAnim);
 
         for (int i = 0; i < mCardCollection.size(); i++) {
@@ -147,7 +158,7 @@ public class CardAnimator {
             RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) v.getLayoutParams();
             RelativeLayout.LayoutParams endLayout = CardUtils.cloneParams(layoutParams);
             ValueAnimator layoutAnim = ValueAnimator.ofObject(new RelativeLayoutParamsEvaluator(), endLayout, mLayoutsMap.get(nv));
-            layoutAnim.setDuration(DURATION);
+            layoutAnim.setDuration(mSwipeOutDuration);
             layoutAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                 @Override
                 public void onAnimationUpdate(ValueAnimator value) {
@@ -185,7 +196,7 @@ public class CardAnimator {
         RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) topView.getLayoutParams();
         RelativeLayout.LayoutParams endLayout = CardUtils.cloneParams(layoutParams);
         ValueAnimator layoutAnim = ValueAnimator.ofObject(new RelativeLayoutParamsEvaluator(), endLayout, mLayoutsMap.get(topView));
-        layoutAnim.setDuration(DURATION);
+        layoutAnim.setDuration(mReturnBackDuration);
         layoutAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator value) {
@@ -244,4 +255,67 @@ public class CardAnimator {
         initLayout();
     }
 
+    public void restack() {
+        AnimatorSet as = new AnimatorSet();
+        ArrayList<Animator> aCollection = new ArrayList<Animator>();
+        final View lastView = mCardCollection.get(0);
+        lastView.setVisibility(View.GONE);
+        for (int i = 1; i < 4; i++) {
+            final View v = mCardCollection.get(i);
+            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) v.getLayoutParams();
+            RelativeLayout.LayoutParams endLayout = CardUtils.cloneParams(layoutParams);
+            CardUtils.move(v, REMOTE_DISTANCE, 0);
+            ValueAnimator layoutAnim = ValueAnimator.ofObject(new RelativeLayoutParamsEvaluator(), mRestackLayouts[i], endLayout);
+            layoutAnim.setDuration(mRestackDuration);
+            layoutAnim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+                @Override
+                public void onAnimationUpdate(ValueAnimator value) {
+                    v.setLayoutParams((LayoutParams) value.getAnimatedValue());
+
+                }
+            });
+            if (i == 1) {
+                layoutAnim.addListener(new AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(Animator animator) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animator animator) {
+                        lastView.setVisibility(View.VISIBLE);
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animator) {
+
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animator animator) {
+
+                    }
+                });
+            }
+            aCollection.add(layoutAnim);
+
+
+        }
+
+        as.playSequentially(aCollection);
+        as.start();
+
+    }
+
+    public void setSwipeOutDuration(int pSwipeOutDuration) {
+        this.mSwipeOutDuration = pSwipeOutDuration;
+    }
+
+    public void setReturnBackDuration(int pReturnBackDuration) {
+        this.mReturnBackDuration = pReturnBackDuration;
+    }
+
+    public void setRestackDuration(int pRestackDuration) {
+        this.mRestackDuration = pRestackDuration;
+    }
 }
